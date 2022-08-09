@@ -1,0 +1,34 @@
+plugins {
+	id 'application'
+	id 'java-library'
+	id 'jacoco'
+	id 'org.gradle.crypto.checksum' version '1.4.0'
+	id 'org.ysb33r.doxygen' version '0.7.0'
+}
+
+apply plugin: 'application'
+apply plugin: 'java-library'
+apply plugin: 'jacoco'
+apply plugin: 'org.gradle.crypto.checksum'
+apply plugin: 'org.ysb33r.doxygen'
+
+repositories {
+	mavenCentral() 
+}
+
+dependencies {
+	implementation 'com.github.horseshoe:horseshoe:1.+'
+	implementation 'io.github.xs-parser:xs-parser:1.+'
+	implementation 'org.commonmark:commonmark:0.18.0'
+	implementation 'org.commonmark:commonmark-ext-autolink:0.18.0'
+	implementation 'org.commonmark:commonmark-ext-gfm-tables:0.18.0'
+	implementation 'org.junit.jupiter:junit-jupiter:5.+'
+	implementation 'junit:junit:4.+'
+}
+
+task resolveDependencies {
+	doLast {
+		configurations.implementation.canBeResolved = true
+		configurations.implementation.resolve()
+	}
+}

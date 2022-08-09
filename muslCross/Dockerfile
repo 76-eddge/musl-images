@@ -13,7 +13,7 @@ SHELL ["/usr/bin/pwsh", "-Command"]
 RUN Invoke-WebRequest 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.2%2B8/OpenJDK17U-jdk_x64_alpine-linux_hotspot_17.0.2_8.tar.gz' -OutFile '/tmp/jdk.tar.gz'; tar -xzf '/tmp/jdk.tar.gz' -C '/opt'; Remove-Item '/tmp/jdk.tar.gz'; New-Item -ItemType "file" -Path "$profile" -Force; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/jdk-17.0.2+8/bin"'; Add-Content "$profile" '$env:JAVA_HOME = "/opt/jdk-17.0.2+8"'
 
 # Grab Gradle
-RUN Invoke-WebRequest 'https://services.gradle.org/distributions/gradle-7.4-bin.zip' -OutFile '/tmp/gradle.zip'; Expand-Archive '/tmp/gradle.zip' '/opt'; Remove-Item '/tmp/gradle.zip'; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/gradle-7.4/bin"'
+RUN Invoke-WebRequest 'https://services.gradle.org/distributions/gradle-7.5.1-bin.zip' -OutFile '/tmp/gradle.zip'; Expand-Archive '/tmp/gradle.zip' '/opt'; Remove-Item '/tmp/gradle.zip'; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/gradle-7.5.1/bin"'
 
 # Other dependencies
 RUN apk add --no-cache  binutils file gcc g++ make libc-dev perl make git cmake patch sed util-linux-dev openssl clang doxygen nodejs py3-setuptools py3-lxml py3-jinja2 python3 && ln -sf python3 /usr/bin/python
@@ -22,10 +22,10 @@ RUN apk add --no-cache  binutils file gcc g++ make libc-dev perl make git cmake 
 RUN pwsh -command apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/community add --no-cache npm
 
 # Get ninja
-RUN Invoke-WebRequest 'https://github.com/ninja-build/ninja/archive/refs/tags/v1.10.2.zip' -OutFile '/tmp/ninja.zip'; Expand-Archive '/tmp/ninja.zip' '/opt'; Remove-Item '/tmp/ninja.zip'; cd '/opt/ninja-*'; ./configure.py --bootstrap; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/ninja-1.10.2"'
+RUN Invoke-WebRequest 'https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.0.zip' -OutFile '/tmp/ninja.zip'; Expand-Archive '/tmp/ninja.zip' '/opt'; Remove-Item '/tmp/ninja.zip'; cd '/opt/ninja-*'; ./configure.py --bootstrap; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/ninja-1.11.0"'
 
 # Get SonarQube
-RUN Invoke-WebRequest 'https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip' -OutFile 'sonar.zip'; Expand-Archive 'sonar.zip' '/opt/sonar'; Remove-Item 'sonar.zip'; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/"'; ((Get-Content -path '/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner' -Raw) -replace 'use_embedded_jre=true','use_embedded_jre=false') | Set-Content -Path '/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner'
+# RUN Invoke-WebRequest 'https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip' -OutFile 'sonar.zip'; Expand-Archive 'sonar.zip' '/opt/sonar'; Remove-Item 'sonar.zip'; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/"'; ((Get-Content -path '/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner' -Raw) -replace 'use_embedded_jre=true','use_embedded_jre=false') | Set-Content -Path '/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner'
 
 RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache erlang
 

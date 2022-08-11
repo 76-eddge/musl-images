@@ -8,13 +8,11 @@ Switch ($Arch) {
 	"arm" {$Environment = "arm-linux-musleabihf"}
 	"i686" {$Environment = "i686-linux-musl"}
 	"powerpc64le" {$Environment = "powerpc64le-linux-musl"}
-	default {throw "Invalid architecture selection"}
+	default {throw "Invalid architecture selection. Valid selections : x86_64, aarch, arm, i686, powerpc64le"}
 } 
 
-New-Item -Path "/opt/$Environment-cross" -ItemType "Directory" -Force
-tar -xf "/tmp/$Environment.tar.xz" -C "/opt/$Environment-cross"
-
-$env:PATH = "/opt/$Environment-cross/bin:" + $env:PATH
+$env:PATH = "/opt/$Environment/bin:" + $env:PATH
 # TODO: Do we need to add any includes here for the default search path?
 $env:CPATH = ""
 $env:CXX = "$Environment-g++"
+$env:CC = "$Environment-gcc"

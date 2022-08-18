@@ -24,34 +24,42 @@ RUN pwsh -command apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/community 
 # Get ninja
 RUN Invoke-WebRequest 'https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.0.zip' -OutFile '/tmp/ninja.zip'; Expand-Archive '/tmp/ninja.zip' '/opt'; Remove-Item '/tmp/ninja.zip'; cd '/opt/ninja-*'; ./configure.py --bootstrap; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/ninja-1.11.0"'
 
-# Get SonarQube
-# RUN Invoke-WebRequest 'https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip' -OutFile 'sonar.zip'; Expand-Archive 'sonar.zip' '/opt/sonar'; Remove-Item 'sonar.zip'; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/"'; ((Get-Content -path '/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner' -Raw) -replace 'use_embedded_jre=true','use_embedded_jre=false') | Set-Content -Path '/opt/sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner'
-
+# erlang
 RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache erlang
 
 # Grab our cross compilers
-RUN Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.1/x86_64-linux-musl.tar.xz' -OutFile '/tmp/x86_64-linux-musl.tar.xz'; New-Item -Path "/opt/x86_64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/x86_64-linux-musl.tar.xz" -C "/opt/x86_64-linux-musl"; Remove-Item '/tmp/x86_64-linux-musl.tar.xz';\
-	Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.1/aarch64-linux-musl.tar.xz' -OutFile '/tmp/aarch64-linux-musl.tar.xz'; New-Item -Path "/opt/aarch64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/aarch64-linux-musl.tar.xz" -C "/opt/aarch64-linux-musl"; Remove-Item '/tmp/aarch64-linux-musl.tar.xz';\
-	Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.1/arm-linux-musleabihf.tar.xz' -OutFile '/tmp/arm-linux-musleabihf.tar.xz'; New-Item -Path "/opt/arm-linux-musleabihf" -ItemType "Directory" -Force; tar -xf "/tmp/arm-linux-musleabihf.tar.xz" -C "/opt/arm-linux-musleabihf"; Remove-Item '/tmp/arm-linux-musleabihf.tar.xz';\
-	Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.1/i686-linux-musl.tar.xz' -OutFile '/tmp/i686-linux-musl.tar.xz'; New-Item -Path "/opt/i686-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/i686-linux-musl.tar.xz" -C "/opt/i686-linux-musl"; Remove-Item '/tmp/i686-linux-musl.tar.xz';\
-	Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.1/powerpc64le-linux-musl.tar.xz' -OutFile '/tmp/powerpc64le-linux-musl.tar.xz';  New-Item -Path "/opt/powerpc64le-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/powerpc64le-linux-musl.tar.xz" -C "/opt/powerpc64le-linux-musl"; Remove-Item '/tmp/powerpc64le-linux-musl.tar.xz'
+RUN Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/x86_64-linux-musl.tar.xz' -OutFile '/tmp/x86_64-linux-musl.tar.xz'; New-Item -Path "/opt/x86_64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/x86_64-linux-musl.tar.xz" -C "/opt/x86_64-linux-musl"; Remove-Item '/tmp/x86_64-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/aarch64-linux-musl.tar.xz' -OutFile '/tmp/aarch64-linux-musl.tar.xz'; New-Item -Path "/opt/aarch64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/aarch64-linux-musl.tar.xz" -C "/opt/aarch64-linux-musl"; Remove-Item '/tmp/aarch64-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/arm-linux-musleabihf.tar.xz' -OutFile '/tmp/arm-linux-musleabihf.tar.xz'; New-Item -Path "/opt/arm-linux-musleabihf" -ItemType "Directory" -Force; tar -xf "/tmp/arm-linux-musleabihf.tar.xz" -C "/opt/arm-linux-musleabihf"; Remove-Item '/tmp/arm-linux-musleabihf.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/i686-linux-musl.tar.xz' -OutFile '/tmp/i686-linux-musl.tar.xz'; New-Item -Path "/opt/i686-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/i686-linux-musl.tar.xz" -C "/opt/i686-linux-musl"; Remove-Item '/tmp/i686-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/powerpc64le-linux-musl.tar.xz' -OutFile '/tmp/powerpc64le-linux-musl.tar.xz';  New-Item -Path "/opt/powerpc64le-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/powerpc64le-linux-musl.tar.xz" -C "/opt/powerpc64le-linux-musl"; Remove-Item '/tmp/powerpc64le-linux-musl.tar.xz'
+
+# COPY musl.tar /tmp
+
+# RUN  tar -xf '/tmp/musl.tar' -C '/opt'; Remove-Item '/tmp/musl.tar'
 
 # Get our Node dependencies
 RUN npm install -g puppeteer rehype-raw rehype-slug rehype-stringify remark remark-gfm remark-html remark-rehype github-slugger
 
 # Grab local files
-# COPY cpp /home/cpp
 
 COPY setMuslLinux.ps1 /opt/scripts/setMuslLinux.ps1
 
-COPY gradle /home/gradle
+COPY gradle /tmp/gradle
+
+# Perform tasks as basic user
+RUN adduser -D jenkins; chown -R jenkins /tmp/gradle
+
+USER jenkins
+
+# COPY --chown=jenkins cpp2 /home/jenkins/cpp2
+
+# COPY --chown=jenkins test /home/jenkins/test
+
+RUN New-Item -ItemType "file" -Path "$profile" -Force; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/gradle-7.5.1/bin/:/opt/jdk-17.0.2+8/bin:/opt/ninja-1.11.0"'; Add-Content "$profile" '$env:JAVA_HOME = "/opt/jdk-17.0.2+8"'; Add-Content "$profile" '$env:NODE_PATH = "/usr/local/lib/node_modules"';
 
 # Get our Gradle dependencies
-RUN cd /home/gradle; gradle --no-daemon resolveDependencies
-
-RUN adduser -D basic
-
-USER basic
+RUN cd /tmp/gradle; gradle --no-daemon resolveDependencies
 
 # For posterity
 

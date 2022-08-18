@@ -13,6 +13,6 @@ Switch ($Arch) {
 
 $env:PATH = "/opt/$Environment/bin:" + $env:PATH
 # TODO: Do we need to add any includes here for the default search path?
-$env:CPATH = ""
+$env:CPATH = "/opt/$Environment/$Environment/include"
 $env:CXX = "$Environment-g++"
 $env:CC = "$Environment-gcc"

@@ -28,11 +28,11 @@ RUN Invoke-WebRequest 'https://github.com/ninja-build/ninja/archive/refs/tags/v1
 RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache erlang
 
 # Grab our cross compilers
-RUN Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/x86_64-linux-musl.tar.xz' -OutFile '/tmp/x86_64-linux-musl.tar.xz'; New-Item -Path "/opt/x86_64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/x86_64-linux-musl.tar.xz" -C "/opt/x86_64-linux-musl"; Remove-Item '/tmp/x86_64-linux-musl.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/aarch64-linux-musl.tar.xz' -OutFile '/tmp/aarch64-linux-musl.tar.xz'; New-Item -Path "/opt/aarch64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/aarch64-linux-musl.tar.xz" -C "/opt/aarch64-linux-musl"; Remove-Item '/tmp/aarch64-linux-musl.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/arm-linux-musleabihf.tar.xz' -OutFile '/tmp/arm-linux-musleabihf.tar.xz'; New-Item -Path "/opt/arm-linux-musleabihf" -ItemType "Directory" -Force; tar -xf "/tmp/arm-linux-musleabihf.tar.xz" -C "/opt/arm-linux-musleabihf"; Remove-Item '/tmp/arm-linux-musleabihf.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/i686-linux-musl.tar.xz' -OutFile '/tmp/i686-linux-musl.tar.xz'; New-Item -Path "/opt/i686-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/i686-linux-musl.tar.xz" -C "/opt/i686-linux-musl"; Remove-Item '/tmp/i686-linux-musl.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.3/powerpc64le-linux-musl.tar.xz' -OutFile '/tmp/powerpc64le-linux-musl.tar.xz';  New-Item -Path "/opt/powerpc64le-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/powerpc64le-linux-musl.tar.xz" -C "/opt/powerpc64le-linux-musl"; Remove-Item '/tmp/powerpc64le-linux-musl.tar.xz'
+RUN Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/x86_64-linux-musl.tar.xz' -OutFile '/tmp/x86_64-linux-musl.tar.xz'; New-Item -Path "/opt/x86_64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/x86_64-linux-musl.tar.xz" -C "/opt/x86_64-linux-musl"; # Remove-Item '/tmp/x86_64-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/aarch64-linux-musl.tar.xz' -OutFile '/tmp/aarch64-linux-musl.tar.xz'; New-Item -Path "/opt/aarch64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/aarch64-linux-musl.tar.xz" -C "/opt/aarch64-linux-musl"; Remove-Item '/tmp/aarch64-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/arm-linux-musleabihf.tar.xz' -OutFile '/tmp/arm-linux-musleabihf.tar.xz'; New-Item -Path "/opt/arm-linux-musleabihf" -ItemType "Directory" -Force; tar -xf "/tmp/arm-linux-musleabihf.tar.xz" -C "/opt/arm-linux-musleabihf"; Remove-Item '/tmp/arm-linux-musleabihf.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/i686-linux-musl.tar.xz' -OutFile '/tmp/i686-linux-musl.tar.xz'; New-Item -Path "/opt/i686-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/i686-linux-musl.tar.xz" -C "/opt/i686-linux-musl"; Remove-Item '/tmp/i686-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/powerpc64le-linux-musl.tar.xz' -OutFile '/tmp/powerpc64le-linux-musl.tar.xz';  New-Item -Path "/opt/powerpc64le-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/powerpc64le-linux-musl.tar.xz" -C "/opt/powerpc64le-linux-musl"; Remove-Item '/tmp/powerpc64le-linux-musl.tar.xz'
 
 # COPY musl.tar /tmp
 
@@ -47,30 +47,25 @@ COPY setMuslLinux.ps1 /opt/scripts/setMuslLinux.ps1
 
 COPY gradle /tmp/gradle
 
+
 # Perform tasks as basic user
-RUN adduser -D jenkins; chown -R jenkins /tmp/gradle
+RUN adduser jenkins; chown -R jenkins /tmp/gradle
 
 USER jenkins
-
-# COPY --chown=jenkins cpp2 /home/jenkins/cpp2
-
-# COPY --chown=jenkins test /home/jenkins/test
 
 RUN New-Item -ItemType "file" -Path "$profile" -Force; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/gradle-7.5.1/bin/:/opt/jdk-17.0.2+8/bin:/opt/ninja-1.11.0"'; Add-Content "$profile" '$env:JAVA_HOME = "/opt/jdk-17.0.2+8"'; Add-Content "$profile" '$env:NODE_PATH = "/usr/local/lib/node_modules"';
 
 # Get our Gradle dependencies
 RUN cd /tmp/gradle; gradle --no-daemon resolveDependencies
 
-# For posterity
 
-# RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/testing add --no-cache powershell
 
-# RUN ARCH=x86_64-linux-musl HOST=https://musl.cc TEMP=/tmp USER=0 /bin/sh -c apk update && apk upgrade && apk add --no-cache curl rsync sudo util-linux && cd ${TEMP} && curl -A "MacroMu" -so ${ARCH}-cross.tgz ${HOST}/${ARCH}-cross.tgz && tar -xf ${ARCH}-cross.tgz && rm ${ARCH}-cross.tgz && cd ${ARCH}-cross && rm -f $(find . -name "ld-musl-*.so.1") && rm usr && rsync --ignore-errors -rLaq . / || true && cd .. && rm -fr ${ARCH}-cross && cd /bin && rename "${ARCH}-" "" * && ln -sf gcc cc && adduser -H -D -g '' ${USER} && adduser ${USER} wheel && echo >> /etc/sudoers '%wheel ALL=(ALL) NOPASSWD:ALL' && apk del curl rsync util-linux
+# COPY --chown=jenkins cpp2 /home/jenkins/cpp2
 
-# RUN pwsh -command gradle -i --no-daemon deps doxygen --rerun-tasks --refresh-dependencies
+# COPY --chown=jenkins test /home/jenkins/test
 
-# RUN pwsh -command apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache doxygen; Set-Content -Force -Path 'settings.gradle' -Value 'rootProject.name="x"'; gradle -i --no-daemon deps doxygen --rerun-tasks --refresh-dependencies
 
-# RUN pwsh -command apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache util-linux-dev && cp /usr/lib/libuuid.* /x86_64-linux-musl/lib
 
-# RUN pwsh -command Invoke-WebRequest 'https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2.tar.gz' -OutFile '/tmp/cmake.tar.gz'; tar -xzf '/tmp/cmake.tar.gz' -C '/opt'; Remove-Item '/tmp/cmake.tar.gz'; cd '/opt/cmake-*'; ./bootstrap --parallel=8 -- -DCMAKE_BUILD_TYPE=RELEASE; make -j8; make install
+# WORKDIR /home/jenkins/cpp2
+
+# RUN /opt/scripts/setMuslLinux x86_64 && make && ./main

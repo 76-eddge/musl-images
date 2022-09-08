@@ -15,11 +15,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build muslCross --file muslCross/Dockerfile --tag mfearsgov/musl-cross:latest
+      run: |
+        docker build muslCross --file muslCross/Dockerfile --tag mfearsgov/musl-cross:latest
+        docker build muslCross --file ubuntuTest/Dockerfile --tag mfearsgov/musl-cross:ubuntu
 
     - name: Login to DockerHub
       run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username mfearsgov --password-stdin
 
     - name: Push Docker Images
-      run: docker push mfearsgov/musl-cross:latest
+      run: |
+        docker push mfearsgov/musl-cross:latest
+        docker push mfearsgov/musl-cross:ubuntu
+
 

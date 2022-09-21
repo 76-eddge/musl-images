@@ -3,7 +3,7 @@ FROM ubuntu AS build
 
 RUN apt-get update
 
-RUN apt-get install -y uuid-dev build-essential
+RUN apt-get install -y uuid-dev build-essential git
 
 RUN adduser jenkins
 

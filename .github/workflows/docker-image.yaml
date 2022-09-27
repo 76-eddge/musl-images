@@ -17,7 +17,8 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build muslCross --file muslCross/Dockerfile --tag mfearsgov/musl-cross:latest
-        docker build muslCross --file ubuntuTest/Dockerfile --tag mfearsgov/musl-cross:ubuntu
+        docker build ubuntuTest --file ubuntuTest/Dockerfile --tag mfearsgov/test:ubuntu
+        docker build md2pdf --file md2pdf/Dockerfile --tag mfearsgov/md2pdf:latest
 
     - name: Login to DockerHub
       run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username mfearsgov --password-stdin
@@ -25,6 +26,7 @@ jobs:
     - name: Push Docker Images
       run: |
         docker push mfearsgov/musl-cross:latest
-        docker push mfearsgov/musl-cross:ubuntu
+        docker push mfearsgov/test:ubuntu
+        docker push mfearsgov/md2pdf:latest
 
 

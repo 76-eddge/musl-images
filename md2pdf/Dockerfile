@@ -2,13 +2,15 @@ FROM node:alpine
 
 RUN apk update
 
-RUN apk add libcrypto3 chromium
+RUN apk add libcrypto3 chromium ttf-freefont
 
 RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/community add powershell
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-RUN cd /home/node && npm install puppeteer rehype-raw rehype-slug rehype-stringify remark remark-gfm remark-html remark-rehype github-slugger && npm audit
+COPY "package.json" /home/
+
+RUN cd /home/ && npm install && npm audit
 
 SHELL ["/usr/bin/pwsh", "-Command"]
 

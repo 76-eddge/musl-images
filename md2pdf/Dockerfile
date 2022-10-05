@@ -2,7 +2,7 @@ FROM node:alpine
 
 RUN apk update
 
-RUN apk add libcrypto3 chromium ttf-freefont
+RUN apk add libcrypto3 chromium ttf-freefont gradle
 
 RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/community add powershell
 

@@ -28,18 +28,20 @@ RUN Invoke-WebRequest 'https://github.com/ninja-build/ninja/archive/refs/tags/v1
 RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache erlang
 
 # Grab our cross compilers
-RUN Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/x86_64-linux-musl.tar.xz' -OutFile '/tmp/x86_64-linux-musl.tar.xz'; New-Item -Path "/opt/x86_64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/x86_64-linux-musl.tar.xz" -C "/opt/x86_64-linux-musl"; # Remove-Item '/tmp/x86_64-linux-musl.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/aarch64-linux-musl.tar.xz' -OutFile '/tmp/aarch64-linux-musl.tar.xz'; New-Item -Path "/opt/aarch64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/aarch64-linux-musl.tar.xz" -C "/opt/aarch64-linux-musl"; Remove-Item '/tmp/aarch64-linux-musl.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/arm-linux-musleabihf.tar.xz' -OutFile '/tmp/arm-linux-musleabihf.tar.xz'; New-Item -Path "/opt/arm-linux-musleabihf" -ItemType "Directory" -Force; tar -xf "/tmp/arm-linux-musleabihf.tar.xz" -C "/opt/arm-linux-musleabihf"; Remove-Item '/tmp/arm-linux-musleabihf.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/i686-linux-musl.tar.xz' -OutFile '/tmp/i686-linux-musl.tar.xz'; New-Item -Path "/opt/i686-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/i686-linux-musl.tar.xz" -C "/opt/i686-linux-musl"; Remove-Item '/tmp/i686-linux-musl.tar.xz';\
-Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.7/powerpc64le-linux-musl.tar.xz' -OutFile '/tmp/powerpc64le-linux-musl.tar.xz';  New-Item -Path "/opt/powerpc64le-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/powerpc64le-linux-musl.tar.xz" -C "/opt/powerpc64le-linux-musl"; Remove-Item '/tmp/powerpc64le-linux-musl.tar.xz'
+RUN Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.11/x86_64-linux-musl.tar.xz' -OutFile '/tmp/x86_64-linux-musl.tar.xz'; New-Item -Path "/opt/x86_64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/x86_64-linux-musl.tar.xz" -C "/opt/x86_64-linux-musl"; # Remove-Item '/tmp/x86_64-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.11/aarch64-linux-musl.tar.xz' -OutFile '/tmp/aarch64-linux-musl.tar.xz'; New-Item -Path "/opt/aarch64-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/aarch64-linux-musl.tar.xz" -C "/opt/aarch64-linux-musl"; Remove-Item '/tmp/aarch64-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.11/arm-linux-musleabihf.tar.xz' -OutFile '/tmp/arm-linux-musleabihf.tar.xz'; New-Item -Path "/opt/arm-linux-musleabihf" -ItemType "Directory" -Force; tar -xf "/tmp/arm-linux-musleabihf.tar.xz" -C "/opt/arm-linux-musleabihf"; Remove-Item '/tmp/arm-linux-musleabihf.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.11/i686-linux-musl.tar.xz' -OutFile '/tmp/i686-linux-musl.tar.xz'; New-Item -Path "/opt/i686-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/i686-linux-musl.tar.xz" -C "/opt/i686-linux-musl"; Remove-Item '/tmp/i686-linux-musl.tar.xz';\
+Invoke-WebRequest 'https://github.com/76-eddge/musl-cross/releases/download/v0.9.11/powerpc64le-linux-musl.tar.xz' -OutFile '/tmp/powerpc64le-linux-musl.tar.xz';  New-Item -Path "/opt/powerpc64le-linux-musl" -ItemType "Directory" -Force; tar -xf "/tmp/powerpc64le-linux-musl.tar.xz" -C "/opt/powerpc64le-linux-musl"; Remove-Item '/tmp/powerpc64le-linux-musl.tar.xz'
 
 # COPY musl.tar /tmp
 
 # RUN  tar -xf '/tmp/musl.tar' -C '/opt'; Remove-Item '/tmp/musl.tar'
 
 # Get our Node dependencies
-RUN npm install -g puppeteer rehype-raw rehype-slug rehype-stringify remark remark-gfm remark-html remark-rehype github-slugger
+COPY "package.json" /home/
+
+RUN cd /home/ && npm install && npm audit
 
 # Grab local files
 
@@ -53,7 +55,7 @@ RUN adduser jenkins; chown -R jenkins /tmp/gradle
 
 USER jenkins
 
-RUN New-Item -ItemType "file" -Path "$profile" -Force; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/gradle-7.5.1/bin/:/opt/jdk-17.0.2+8/bin:/opt/ninja-1.11.0"'; Add-Content "$profile" '$env:JAVA_HOME = "/opt/jdk-17.0.2+8"'; Add-Content "$profile" '$env:NODE_PATH = "/usr/local/lib/node_modules"';
+RUN New-Item -ItemType "file" -Path "$profile" -Force; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/gradle-7.5.1/bin/:/opt/jdk-17.0.2+8/bin:/opt/ninja-1.11.0"'; Add-Content "$profile" '$env:JAVA_HOME = "/opt/jdk-17.0.2+8"'; Add-Content "$profile" '$env:PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium-browser"'
 
 # Get our Gradle dependencies
 RUN cd /tmp/gradle; gradle --no-daemon resolveDependencies

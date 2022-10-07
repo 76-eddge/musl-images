@@ -16,7 +16,7 @@ RUN Invoke-WebRequest 'https://github.com/adoptium/temurin17-binaries/releases/d
 RUN Invoke-WebRequest 'https://services.gradle.org/distributions/gradle-7.5.1-bin.zip' -OutFile '/tmp/gradle.zip'; Expand-Archive '/tmp/gradle.zip' '/opt'; Remove-Item '/tmp/gradle.zip'; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/gradle-7.5.1/bin"'
 
 # Other dependencies
-RUN apk add --no-cache musl-dev binutils file gcc g++ make libc-dev perl make git cmake patch sed util-linux-dev openssl llvm-dev clang doxygen nodejs py3-setuptools py3-lxml py3-jinja2 python3 && ln -sf python3 /usr/bin/python
+RUN apk add --no-cache linux-headers musl-dev binutils file gcc g++ make libc-dev perl make git cmake patch sed util-linux-dev openssl llvm-dev clang doxygen libcrypto3 chromium ttf-freefont nodejs py3-setuptools py3-lxml py3-jinja2 python3 && ln -sf python3 /usr/bin/python
 
 # Get npm
 RUN pwsh -command apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/community add --no-cache npm
@@ -48,7 +48,6 @@ RUN cd /home/ && npm install && npm audit
 COPY setMuslLinux.ps1 /opt/scripts/setMuslLinux.ps1
 
 COPY gradle /tmp/gradle
-
 
 # Perform tasks as basic user
 RUN adduser jenkins; chown -R jenkins /tmp/gradle

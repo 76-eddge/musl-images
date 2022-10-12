@@ -9,7 +9,7 @@ RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache ca-c
 SHELL ["/usr/bin/pwsh", "-Command"]
 
 # Other dependencies
-RUN apk add --no-cache linux-headers musl-dev binutils file gcc g++ make libc-dev perl make git cmake patch sed util-linux-dev openssl llvm-dev clang doxygen libcrypto3 chromium ttf-freefont nodejs py3-setuptools py3-lxml py3-jinja2 python3 && ln -sf python3 /usr/bin/python
+RUN apk add --no-cache linux-headers musl-dev binutils file gcc g++ make libc-dev perl make git cmake patch sed util-linux-dev openssl llvm-dev clang doxygen gmp-dev libcrypto3 chromium ttf-freefont nodejs py3-setuptools py3-lxml py3-jinja2 python3 && ln -sf python3 /usr/bin/python
 
 # Get npm
 RUN apk -UX https://dl-cdn.alpinelinux.org/alpine/edge/community add --no-cache npm gradle openjdk17-jdk 

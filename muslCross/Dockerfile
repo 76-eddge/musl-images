@@ -3,18 +3,16 @@ FROM alpine AS build
 # REMOVE Install vim
 RUN apk -UX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache vim
 # Install Powershell and its dependencies
-RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl1.1 libstdc++ tzdata userspace-rcu zlib icu-libs curl && apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache lttng-ust && curl -L https://github.com/PowerShell/PowerShell/releases/download/v7.2.5/powershell-7.2.5-linux-alpine-x64.tar.gz -o /tmp/powershell.tar.gz && mkdir -p /opt/microsoft/powershell/7 && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 && chmod +x /opt/microsoft/powershell/7/pwsh && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh # buildkit
+RUN apk -UvX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl1.1 libstdc++ tzdata userspace-rcu zlib icu-libs curl && apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache lttng-ust && curl -L https://github.com/PowerShell/PowerShell/releases/download/v7.2.7/powershell-7.2.7-linux-alpine-x64.tar.gz -o /tmp/powershell.tar.gz && mkdir -p /opt/microsoft/powershell/7 && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 && chmod +x /opt/microsoft/powershell/7/pwsh && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh # buildkit
 
 # Use Powershell for all future RUN commands
 SHELL ["/usr/bin/pwsh", "-Command"]
 
 # Other dependencies
-RUN apk add --no-cache linux-headers musl-dev binutils file gcc g++ make libc-dev perl make git cmake patch sed util-linux-dev openssl llvm-dev clang doxygen gmp-dev libcrypto3 chromium ttf-freefont nodejs py3-setuptools py3-lxml py3-jinja2 python3 && ln -sf python3 /usr/bin/python
+RUN apk -UX https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache linux-headers musl-dev binutils file gcc g++ make libc-dev perl make git cmake patch sed util-linux-dev openssl llvm-dev clang doxygen gmp-dev libcrypto3 chromium ttf-freefont nodejs py3-setuptools py3-lxml py3-jinja2 python3 && ln -sf python3 /usr/bin/python
 
 # Get npm
 RUN apk -UX https://dl-cdn.alpinelinux.org/alpine/edge/community add --no-cache npm gradle openjdk17-jdk 
-
-SHELL ["/usr/bin/pwsh", "-Command"]
 
 # Get ninja
 RUN Invoke-WebRequest 'https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.0.zip' -OutFile '/tmp/ninja.zip'; Expand-Archive '/tmp/ninja.zip' '/opt'; Remove-Item '/tmp/ninja.zip'; cd '/opt/ninja-*'; ./configure.py --bootstrap; New-Item -ItemType "file" -Path "$profile" -Force; Add-Content "$profile" '$env:PATH = "${env:PATH}:/opt/ninja-1.11.0"'

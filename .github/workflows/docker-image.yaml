@@ -15,30 +15,30 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build muslCross --file muslCross/Dockerfile --tag mfearsgov/musl-cross:0.4
+      run: docker build muslCross --file muslCross/Dockerfile --tag mfearsgov/musl-cross:0.5
 
     - id: anchore-scan
       name: Run Anchore Scan
       uses: anchore/scan-action@v3
       with:
-        image: 'mfearsgov/musl-cross:0.4'
+        image: 'mfearsgov/musl-cross:0.5'
         fail-build: false
 
     - name: Store Anchore Scan Results
       run: |
         mkdir -p scan-results
-        cp ${{ steps.anchore-scan.outputs.sarif }} scan-results/musl-cross:0.4.sarif
+        cp ${{ steps.anchore-scan.outputs.sarif }} scan-results/musl-cross:0.5.sarif
     - name: Upload Anchore Scan Report
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: scan-results/musl-cross:0.4.sarif
+        sarif_file: scan-results/musl-cross:0.5.sarif
 
     - name: Login to DockerHub
       run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username mfearsgov --password-stdin
 
     - name: Push Docker Images
       run: |
-        docker push mfearsgov/musl-cross:0.4
+        docker push mfearsgov/musl-cross:0.5
 
 
 
